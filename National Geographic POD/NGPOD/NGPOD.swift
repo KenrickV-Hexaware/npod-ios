@@ -98,18 +98,20 @@ struct NGPOD_Previews: PreviewProvider {
         
         static func fetch(completion: @escaping (Result<SimpleEntry, Error>) -> Void) {
             
+            /*
             let currentDate = getCurrentDate()
             
+           
             //check cache first
             if(getCacheValue("currentDate") == currentDate) {
                 
                 downloadImage(getCacheValue("ngpodImage"), completion: completion)
             }
-            
+            */
             AF.request("https://ngpod-api.herokuapp.com/api/photo")
                 .responseJSON { (response) in
                     
-                    let pod = JSON(response.data)
+                    let pod = JSON(response.data!)
               
                     if(pod["title"].string == "") {
                         print("SOMETHING IS NOT RIGHT!")
