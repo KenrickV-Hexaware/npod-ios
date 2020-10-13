@@ -14,11 +14,11 @@ import Kingfisher
 
 struct Provider: IntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!)
+        SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!, title: "Tiger")
     }
 
     func getSnapshot(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), configuration: configuration, photo: UIImage(named: "widgetDefault")!)
+        let entry = SimpleEntry(date: Date(), configuration: configuration, photo: UIImage(named: "widgetDefault")!, title: "Tiger")
         completion(entry)
     }
 
@@ -33,7 +33,7 @@ struct Provider: IntentTimelineProvider {
             if case .success(let fetchedCommit) = result {
                 commit = fetchedCommit
             } else {
-                commit = SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!)
+                commit = SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!, title: "Tiger")
             }
             let timeline = Timeline(entries: [commit], policy: .after(refreshDate))
             completion(timeline)
@@ -46,14 +46,36 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
     let configuration: ConfigurationIntent
     let photo: UIImage
+    let title: String
 }
 
     struct NGPODEntryView : SwiftUI.View {
     var entry: Provider.Entry
 
     var body: some SwiftUI.View {
-        Image(uiImage: entry.photo).resizable()
-            .scaledToFill()
+        ZStack(alignment: .bottom) {
+            Image(uiImage: entry.photo).resizable()
+                .scaledToFill()
+            VStack (alignment: .center) {
+                Text(entry.title)
+                    .font(.body)
+                    .foregroundColor(.white)
+                    .padding(20)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.center)
+                    
+            }
+            .frame(minWidth: 0,
+                            maxWidth: .infinity,
+                            minHeight: 0,
+                            maxHeight: 30,
+                            alignment: .center
+                    )
+            .padding(5)
+            .background(Color.black.opacity(/*@START_MENU_TOKEN@*/0.8/*@END_MENU_TOKEN@*/))
+        }
+        
+                    
     }
 }
 
@@ -72,7 +94,7 @@ struct NGPOD: Widget {
 
 struct NGPOD_Previews: PreviewProvider {
     static var previews: some SwiftUI.View {
-        NGPODEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!))
+        NGPODEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!, title: "Tiger"))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }
@@ -115,17 +137,17 @@ struct NGPOD_Previews: PreviewProvider {
               
                     if(pod["title"].string == "") {
                         print("SOMETHING IS NOT RIGHT!")
-                        completion(.success(SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!)))
+                        completion(.success(SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!, title: "Tiger")))
                         
                     } else {
                         
-                        downloadImage(pod["image"].string!, completion: completion)
+                        downloadImage(pod["image"].string!, title: pod["title"].string!, completion: completion)
                         
                     }
                 }
         }
         
-        static func downloadImage(_ imageUrl: String, completion: @escaping (Result<SimpleEntry, Error>) -> Void) {
+        static func downloadImage(_ imageUrl: String, title: String, completion: @escaping (Result<SimpleEntry, Error>) -> Void) {
             let url = URL(string: imageUrl)
             
             let downloader = ImageDownloader.default
@@ -136,10 +158,10 @@ struct NGPOD_Previews: PreviewProvider {
                     setCacheValue("currentDate", value: getCurrentDate())
                     setCacheValue("ngpodImage", value: imageUrl)
                     
-                    completion(.success(SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: value.image)))
+                    completion(.success(SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: value.image, title: title)))
                 case .failure(let error):
                     print(error)
-                    completion(.success(SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!)))
+                    completion(.success(SimpleEntry(date: Date(), configuration: ConfigurationIntent(), photo: UIImage(named: "widgetDefault")!, title: "Tiger")))
                 }
             }
         }
