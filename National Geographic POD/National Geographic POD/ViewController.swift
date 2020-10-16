@@ -9,6 +9,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import Kingfisher
+import Agrume
 
 class ViewController: UIViewController {
     @IBOutlet weak var ai: UIActivityIndicatorView!
@@ -21,6 +22,10 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(loadImage))
+        self.image.isUserInteractionEnabled = true
+        self.image.addGestureRecognizer(singleTap)
         
         self.image.kf.indicatorType = .activity
         
@@ -50,6 +55,14 @@ class ViewController: UIViewController {
             
             ai.stopAnimating()
         }
+    }
+    
+    @objc func loadImage() {
+        if (image.isHidden == false) {
+            let agrume = Agrume(image: image.image!)
+            agrume.show(from: self)
+        }
+        
     }
     
     func fetchPOD() {

@@ -9,6 +9,7 @@ target 'National Geographic POD' do
   pod ‘Alamofire’
   pod 'SwiftyJSON'
   pod 'Kingfisher'
+  pod 'Agrume'
 end
 
 target 'NGPODExtension' do
